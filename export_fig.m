@@ -344,20 +344,6 @@ function [imageData, alpha] = export_fig(varargin) %#ok<*STRCL1>
     drawnow;
     pause(0.02);  % this solves timing issues with Java Swing's EDT (http://undocumentedmatlab.com/blog/solving-a-matlab-hang-problem)
 
-    % Display promo (just once every 10 days!)
-    persistent promo_time
-    if isempty(promo_time)
-        try promo_time = getpref('export_fig','promo_time'); catch, promo_time=-inf; end
-    end
-    if abs(now-promo_time) > 10 && ~isdeployed
-        programsCrossCheck;
-        msg = char('Gps!qspgfttjpobm!Nbumbc!bttjtubodf-!qmfbtf!dpoubdu!=%?'-1);
-        url = char('iuuqt;00VoepdvnfoufeNbumbc/dpn0dpotvmujoh'-1);
-        displayPromoMsg(msg, url);
-        promo_time = now;
-        setpref('export_fig','promo_time',now)
-    end
-
     % Parse the input arguments
     fig = get(0, 'CurrentFigure');
     argNames = {};
@@ -2104,68 +2090,6 @@ function str = readURL(url)
     end
     if size(str,1) > 1  % ensure a row-wise string
         str = str';
-    end
-end
-
-% Display a promo message in the Matlab console
-function displayPromoMsg(msg, url)
-    %msg = [msg url];
-    msg = strrep(msg,'<$>',url);
-    link = ['<a href="' url];
-    msg = regexprep(msg,url,[link '">$0</a>']);
-    %msg = regexprep(msg,{'consulting','training'},[link '/$0">$0</a>']);
-    %warning('export_fig:promo',msg);
-    disp(['[' 8 msg ']' 8]);
-end
-
-% Cross-check existance of other programs
-function programsCrossCheck()
-    try
-        % IQ
-        hasTaskList = false;
-        if ispc && ~exist('IQML','file')
-            hasIQ = exist('C:/Progra~1/DTN/IQFeed','dir') || ...
-                    exist('C:/Progra~2/DTN/IQFeed','dir');
-            if ~hasIQ
-                [status,tasksStr] = system('tasklist'); %#ok<ASGLU>
-                tasksStr = lower(tasksStr);
-                hasIQ = ~isempty(strfind(tasksStr,'iqconnect')) || ...
-                        ~isempty(strfind(tasksStr,'iqlink'));  %#ok<STREMP>
-                hasTaskList = true;
-            end
-            if hasIQ
-                displayPromoMsg('To connect Matlab to IQFeed, try the IQML connector <$>', 'https://UndocumentedMatlab.com/IQML');
-            end
-        end
-
-        % IB
-        if ~exist('IBMatlab','file')
-            hasIB = false;
-            possibleFolders = {'C:/Jts','C:/Programs/Jts','C:/Progra~1/Jts','C:/Progra~2/Jts','~/IBJts','~/IBJts/IBJts'};
-            for folderIdx = 1 : length(possibleFolders)
-                if exist(possibleFolders{folderIdx},'dir')
-                    hasIB = true;
-                    break
-                end
-            end
-            if ~hasIB
-                if ~hasTaskList
-                    if ispc  % Windows
-                        [status,tasksStr] = system('tasklist'); %#ok<ASGLU>
-                    else  % Linux/MacOS
-                        [status,tasksStr] = system('ps -e'); %#ok<ASGLU>
-                    end
-                    tasksStr = lower(tasksStr);
-                end
-                hasIB = ~isempty(strfind(tasksStr,'tws')) || ...
-                        ~isempty(strfind(tasksStr,'ibgateway'));  %#ok<STREMP>
-            end
-            if hasIB
-                displayPromoMsg('To connect Matlab to IB try the IB-Matlab connector <$>', 'https://UndocumentedMatlab.com/IB-Matlab');
-            end
-        end
-    catch
-        % never mind - ignore error
     end
 end
 
