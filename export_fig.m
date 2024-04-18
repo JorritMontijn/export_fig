@@ -272,7 +272,7 @@ function [imageData, alpha] = export_fig(varargin) %#ok<*STRCL1>
 % 11/09/15: Fixed issue #103: magnification must never become negative; also fixed reported error msg in parsing input params
 % 26/09/15: Alert if trying to export transparent patches/areas to non-PNG outputs (issue #108)
 % 04/10/15: Do not suggest workarounds for certain errors that have already been handled previously
-% 01/11/15: Fixed issue #112: use same renderer in print2eps as export_fig (thanks to Jesús Pestana Puerta)
+% 01/11/15: Fixed issue #112: use same renderer in print2eps as export_fig (thanks to Jes??s Pestana Puerta)
 % 10/11/15: Custom GS installation webpage for MacOS. Thanks to Andy Hueni via FEX
 % 19/11/15: Fixed clipboard export in R2015b (thanks to Dan K via FEX)
 % 21/02/16: Added -c option for indicating specific crop amounts (idea by Cedric Noordam on FEX)
@@ -519,7 +519,7 @@ function [imageData, alpha] = export_fig(varargin) %#ok<*STRCL1>
     try
         if ~using_hg2(fig)
             annotationHandles = findall(fig,'Type','hggroup','-and','-property','Units','-and','-not','Units','norm');
-            try  % suggested by Jesús Pestana Puerta (jespestana) 30/9/2015
+            try  % suggested by Jes??s Pestana Puerta (jespestana) 30/9/2015
                 originalUnits = get(annotationHandles,'Units');
                 set(annotationHandles,'Units','norm');
             catch
@@ -812,7 +812,9 @@ function [imageData, alpha] = export_fig(varargin) %#ok<*STRCL1>
                     % http://www.mathworks.com/matlabcentral/answers/265265-can-export_fig-or-else-draw-vector-graphics-with-transparent-surfaces
                     % TODO - use transparency when exporting to PDF by not passing via print2eps
                     msg = 'export_fig currently supports transparent patches/areas only in PNG output. ';
-                    if options.pdf && ~options.silent
+                    print(fig, '-dpdf', options.name); 
+					return
+					if options.pdf && ~options.silent
                         warning('export_fig:transparency', '%s\nTo export transparent patches/areas to PDF, use the print command:\n print(gcf, ''-dpdf'', ''%s.pdf'');', msg, options.name);
                     elseif ~options.png && ~options.tif && ~options.silent  % issue #168
                         warning('export_fig:transparency', '%s\nTo export the transparency correctly, try using the ScreenCapture utility on the Matlab File Exchange: http://bit.ly/1QFrBip', msg);
